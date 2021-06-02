@@ -1,20 +1,68 @@
+  
 // callbacks, promises and async/await
-function sendBackTheSumToPrint(number1, number2, callback) {
-    let sum = number1 + number2;
-    callback(sum);
+function sendBackThePostsToPrint(callback) {
+    // Fetch the posts
+    let request = new XMLHttpRequest();
+    request.open("GET", "https://jsonplaceholder.typicode.com/posts")
+    request.send();
+    request.onload = () => {
+        callback(request.response);
+    }
 }
-function logTheSum(sum) {
-    console.log(`Sum is ${sum}`)
+function logPosts(posts) {
+    console.log(`posts are ${posts}`)
 }
-// sendBackTheSumToPrint(10, 20, logTheSum);
+sendBackThePostsToPrint(logPosts);
 
-function greet(name, callback) {
-    console.log('Hello world');
-    callback(name);
-}
+// Promises
+let getEmployeeIds = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve([2,3,4,6,7])
+    }, 1000)
+});
+getEmployeeIds
+.then((idArray) => {
+    console.log("Promise resolved. Ids : ", idArray);
+})
+.catch(error => {
+    console.log("Promise rejected. Error : ", error);
+})
 
-function sayName(name) {
-    console.log('Hello' + ' ' + name);
+// Calling API using fetch that returns a promise
+function logPosts(posts) {
+    console.log(posts);
+    console.log(`posts are ${posts}`)
 }
+fetch('https://jsonplaceholder.typicode.com/posts')
+  .then(response => response.json())
+  .then(jsonValue => logPosts(jsonValue));
 
-setTimeout(greet, 2000, 'John', sayName);
+
+//Aynsc/Await
+let getEmployeeIds = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve([2,3,4,6,7])
+    }, 1000)
+});
+let getEmployeeObject = (employeeId) => {
+    return new Promise((resolve, reject) => {
+        setTimeout((id)=> {
+            const employee = {
+                id: id,
+                name: 'Bruno',
+                role: 'UI Engineer'
+            }
+            resolve(employee)
+        }, 1500, employeeId)
+    })
+}
+async function getEmployee(){
+    const ids = await getEmployeeIds;
+    console.log(ids);
+    const employee = await getEmployeeObject(ids[1]);
+    console.log(employee);
+    return employee;
+}
+getEmployee().then( employee => {
+    console.log(employee);
+})
